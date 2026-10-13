@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>사람이 배정하고 판정하는 작업 보드</title></head>
+<body style="margin:0;padding:16px;background:#f8fafc">
+<div lang="ko" aria-label="사람과 에이전트의 역할 및 칸반 기능 명세" style="font-family:system-ui,sans-serif;line-height:1.65;max-width:1100px;margin:auto;color:#172033;background:#f8fafc;padding:24px;border-radius:16px;">
+  <h1 style="font-size:24px;margin-top:0;">사람은 맡기고 판정합니다. 에이전트는 실행합니다.</h1>
+  <div aria-label="네 상태 흐름" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:20px;">
+    <div><strong>Todo</strong><br>할 일 · 맡긴 일</div><span aria-hidden="true">→</span>
+    <div><strong>In Progress</strong><br>하는 중 · 하고 있는 일</div><span aria-hidden="true">→</span>
+    <div><strong>Review</strong><br>검토 대기 · 끝냈다고 올린 일</div><span aria-hidden="true">→</span>
+    <div><strong>Done</strong><br>완료 · 확인이 끝난 일</div>
+  </div>
+  <p>Review에서 사람 반려 → 이유를 보존하고 Todo로 이동 → 사람의 재실행 지시 → 에이전트가 이유를 읽고 재작업. 자동 재실행하지 않습니다.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px;">
+    <section aria-labelledby="problem" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="problem">1. 문제</h2><p>AI가 실행한 일과 사람이 확인한 완료를 구분하고, 에이전트의 배정·판정 권한 우회와 기록 삭제를 막아야 합니다.</p>
+    </section>
+    <section aria-labelledby="users" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="users">2. 사용자</h2><p>사람: 배정·승인·반려.<br>에이전트: 맡은 작업 조회·시작·결과 제출.<br>서버: 작업별 codex exec 실행, 권한과 이력 관리.</p>
+    </section>
+    <section aria-labelledby="goals" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="goals">3. 목표</h2><p>사람 배정 → 에이전트 실행 → 결과 제출 → 사람 판정. 반려 이유를 재작업에 전달하고 모든 이동을 지울 수 없는 기록으로 보존합니다.</p>
+    </section>
+    <section aria-labelledby="scope" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="scope">4. 범위</h2><ul><li>네 열, 모든 작업의 담당자는 에이전트</li><li>제목·담당 에이전트 필수, 상세 내용 선택, Todo로 생성</li><li>사람의 배정·승인·이유를 포함한 반려</li><li>담당 작업 조회·시작·제출만 허용하는 에이전트 API</li><li>제출 결과: 작업 요약·변경 파일 목록·테스트 결과. 실패·미실행도 명시하여 Review 제출 가능</li><li>서버의 codex exec 실행, 별도 OpenAI API 키 불필요</li><li>실패·30분 타임아웃·취소: 결과 없으면 Todo, 제출한 Review 결과는 보존. 자동 재실행 없음</li><li>에이전트별 한 작업 실행, 서로 다른 에이전트는 동시 실행 가능. 실행 중 추가 요청은 거부하며 대기열 없음</li><li>누가·언제·어디서 어디로 이동했는지 삭제 불가 기록으로 저장</li><li>사람 세션·회차별 토큰, 전용 OS 계정의 격리 검증 후 실제 실행</li><li>TypeScript·React·Node.js, 단일 로컬 서버, SQLite</li></ul>
+    </section>
+    <section aria-labelledby="excluded" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="excluded">5. 범위 밖</h2><ul><li>Backlog·미배정</li><li>에이전트 자율 작업 가져가기·타 작업 접근</li><li>에이전트 완료·반려 판정</li><li>이동 기록 수정·삭제</li><li>Git 저장소·브랜치</li><li>이번 문서 정리 중 코드 수정·실제 작업 실행·외부 이슈 게시</li></ul>
+    </section>
+    <section aria-labelledby="scenarios" style="background:#fff;padding:20px;border:1px solid #cbd5e1;border-radius:12px;">
+      <h2 id="scenarios">6. 확인할 시나리오</h2><p>정상: 사람 배정 → 사람의 실행 버튼 클릭 → 서버가 담당 작업의 codex exec 실행 → Review 제출 → 사람 승인으로 Done.</p><p>반려: 이유 입력 → Todo 복귀 → 사람의 재실행 지시 → 에이전트가 이유를 읽고 재작업 → 결과 재제출.</p><p>예외: 에이전트의 배정·완료·타 작업 접근·기록 삭제·사람 사칭을 서버에서 거부.</p>
+    </section>
+    <section aria-labelledby="done" style="background:#e8f3ed;padding:20px;border:1px solid #94bfa4;border-radius:12px;grid-column:1/-1;">
+      <h2 id="done">7. 완료 기준</h2><ul><li>네 열과 사람·에이전트 권한이 UI·서버에서 일치.</li><li>결과 제출은 Review, Done은 사람 판정만 가능.</li><li>반려 이유 전달과 재작업 확인.</li><li>모든 이동의 행위자·시각·전이를 영속 저장하고 삭제 거부.</li><li>임시 SQLite의 허용·거부 테스트와 기록.</li><li>실제 CLI 연동과 API 권한 우회 방지·저장소 격리를 별도로 검증.</li></ul><p>첫 구현: 로그인·에이전트 목록·생성·조회·영속성·감사 기록·자동 테스트. 현재는 문서 확정이며 구현과 실행 검증은 아직 진행하지 않았습니다.</p>
+    </section>
+  </div>
+</div>
+</body></html>

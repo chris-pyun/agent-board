@@ -1,0 +1,31 @@
+# Dependencies and generated output
+node_modules/
+build/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Runtime databases, workspaces and local state
+data/
+.runtime/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
+
+# Credentials and machine-specific settings
+.env
+.env.*
+!.env.example
+.codex/
+.aws/
+*.pem
+*.key
+auth.json
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
